@@ -1,0 +1,175 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>FaceRoom — редактор макетов</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+:root{--blue:#8EC5DA;--beige:#DFD7C8;--black:#1A1A1A;--line:#D7D0C5;--panel:#F5F0EA}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Montserrat','Arial Narrow',sans-serif;color:var(--black);background:#EDE8E0}
+.wrap{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+.panel{background:var(--panel);border-right:1px solid var(--line);padding:18px;overflow-y:auto;max-height:100vh}
+.stage{padding:22px 26px;overflow-y:auto;max-height:100vh}
+.ttl{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 2px}
+.sub{font-size:11px;color:#8A8378;margin:0 0 16px;line-height:1.5}
+label{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A7267;margin:12px 0 5px}
+textarea,input[type=text],select{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px;font-size:11px;font-family:inherit}
+textarea{min-height:80px;font-family:ui-monospace,monospace;line-height:1.4}
+.seg{display:flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:3px;margin-top:4px}
+.seg button{flex:1;border:0;background:transparent;font-size:11px;font-weight:600;padding:7px 4px;border-radius:6px;cursor:pointer;color:#6b6459}
+.seg button.on{background:var(--black);color:#fff}
+.btn{width:100%;margin-top:10px;border:0;border-radius:20px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;background:var(--black);color:#fff}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--black)}
+.hint{font-size:10px;color:#9A9388;line-height:1.5;margin-top:6px}
+.grid{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.card{position:relative}
+.card .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.card .nm{font-size:11px;font-weight:700;color:#5f584d}
+.card .tg{display:flex;gap:4px}
+.card .tg button{border:1px solid var(--line);background:#fff;border-radius:5px;font-size:11px;padding:2px 7px;cursor:pointer}
+.card .tg button.on{background:var(--black);color:#fff;border-color:var(--black)}
+.scaleWrap{position:relative;overflow:hidden;border-radius:6px;box-shadow:0 3px 14px rgba(0,0,0,.13)}
+.canvas{position:absolute;top:0;left:0;transform-origin:top left;overflow:hidden;font-family:'Montserrat',sans-serif}
+.canvas .bg{position:absolute;inset:0;background-size:cover;cursor:crosshair}
+.canvas .scrim{position:absolute;inset:0;pointer-events:none}
+.canvas.dark{color:var(--black)}.canvas:not(.dark){color:#fff}
+.el{position:absolute;transform:translate(-50%,-50%);cursor:grab;max-width:88%;text-align:center;user-select:none;outline:1.5px dashed transparent;padding:2px}
+.el:hover{outline-color:rgba(255,255,255,.6)}
+.el::after{content:'⤧';position:absolute;right:-2px;top:-2px;font-size:20px;line-height:1;opacity:0;color:#8EC5DA;text-shadow:0 0 3px rgba(0,0,0,.6)}
+.el:hover::after,.el.act::after{opacity:1}
+.canvas.dark .el:hover{outline-color:rgba(0,0,0,.4)}
+.el.act{outline:2px solid #8EC5DA !important}
+.canvas .alignbar{position:absolute;transform:translate(-50%,-130%);display:flex;gap:4px;background:#1A1A1A;border-radius:8px;padding:5px;z-index:9}
+.canvas .alignbar button{border:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:6px 12px;border-radius:6px;cursor:pointer}
+.canvas .alignbar button.on{background:#8EC5DA;color:#1A1A1A}
+.el.head{font-weight:800;text-transform:uppercase;line-height:1.0;letter-spacing:-.01em}
+.el.disc{font-weight:500;opacity:.9;line-height:1.2}
+.el.sub{font-weight:500;line-height:1.2}
+.el.offer{font-weight:700;text-transform:uppercase;line-height:1.08}
+.el .hr{height:1px;background:currentColor;opacity:.6;margin:.3em 0}
+.el.logo img{display:block}
+.focus{position:absolute;width:26px;height:26px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+</style>
+<div class="wrap">
+  <aside class="panel">
+    <p class="ttl">Редактор макетов</p>
+    <p class="sub">Двигай каждый элемент мышкой. Клик по фото — фокус кадра. Раскладка сохраняется отдельно на каждый формат.</p>
+    <label>Переменные P1–P5 (из строки)</label>
+    <textarea id="vars"></textarea>
+    <button class="btn ghost" id="load">Загрузить</button>
+    <label>Фон</label>
+    <div class="seg" id="bgseg"><button data-m="blue" class="on">Голубой</button><button data-m="beige">Беж</button><button data-m="photo">Фото</button></div>
+    <div id="photobox" style="display:none">
+      <label>Ссылка на фото или файл</label>
+      <input id="bgurl" type="text" placeholder="https://…">
+      <input id="bgfile" type="file" accept="image/*" style="font-size:11px;margin-top:4px">
+    </div>
+    <button class="btn" id="save">Скопировать раскладку (JSON)</button>
+    <button class="btn ghost" id="reset">Сбросить всё</button>
+    <textarea id="out" style="margin-top:10px" placeholder="Здесь появится раскладка для вставки в колонку «Раскладка»"></textarea>
+  </aside>
+  <main class="stage"><div class="grid" id="grid"></div></main>
+</div>
+<script>
+const LOGO_W="FR_logo_osnv_w-01.png", LOGO_B="FR_logo_osnv.png";
+const $=id=>document.getElementById(id);
+const FMT={
+ square:  {w:1080,h:1080,logo:1,pad:70, head:76, sub:29,cond:35,disc:22,date:29,logoH:104},
+ story:   {w:1080,h:1920,logo:1,pad:80, head:80, sub:33,cond:40,disc:24,date:33,logoH:120},
+ carousel:{w:1000,h:1250,logo:0,pad:64, head:70, sub:27,cond:31,disc:20,date:27,logoH:0},
+ banner:  {w:1250,h:400, logo:0,pad:40, head:62, sub:0, cond:0, disc:0, date:26,logoH:0}
+};
+const DEF={
+ square:  {disc:{x:50,y:8}, head:{x:50,y:28}, date:{x:50,y:40}, sub:{x:50,y:50}, offer:{x:50,y:72}, logo:{x:50,y:92}},
+ story:   {disc:{x:50,y:13},head:{x:50,y:28}, date:{x:50,y:40}, sub:{x:50,y:50}, offer:{x:50,y:70}, logo:{x:50,y:88}},
+ carousel:{disc:{x:50,y:8}, head:{x:50,y:30}, date:{x:50,y:42}, sub:{x:50,y:52}, offer:{x:50,y:74}, logo:{x:50,y:0}},
+ banner:  {disc:{x:50,y:0}, head:{x:62,y:55}, date:{x:62,y:32}, sub:{x:0,y:0},   offer:{x:0,y:0},  logo:{x:0,y:0}}
+};
+let L={}, IMG=null, ACT=null;
+function initState(){ L={}; Object.keys(FMT).forEach(k=>{ L[k]={color:'light',focal:{x:50,y:40},els:JSON.parse(JSON.stringify(DEF[k]))}; }); }
+initState();
+const example={p1:"Проработка лица криоложками в подарок",p2:"При покупке 2 доп. уходов",p3:"Летнее охлаждение и увлажнение",p4:"1 – 31 июля",p5:"Подробности у администратора · до 31.07.2026"};
+const _q=new URLSearchParams(location.search);
+const _pre={p1:_q.get('p1'),p2:_q.get('p2'),p3:_q.get('p3'),p4:_q.get('p4'),p5:_q.get('p5')};
+let V = (_pre.p1||_pre.p2) ? _pre : example;
+$('vars').value=JSON.stringify(V,null,2);
+if(_q.get('bg')){ const bm=_q.get('bg'); if(bm==='beige'||bm==='blue'){} else { IMG=bm; } }
+const esc=s=>(s||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+function bgMode(){return $('bgseg').querySelector('.on').dataset.m;}
+function render(){
+  const mode=bgMode();
+  $('grid').innerHTML=Object.keys(FMT).map(k=>{
+    const f=FMT[k], st=L[k], box=250,boxH=330, sc=Math.min(box/f.w,boxH/f.h);
+    const sw=Math.round(f.w*sc),sh=Math.round(f.h*sc);
+    const dark=st.color==='dark';
+    const els=[];
+    const has=(k2,fmt)=>{ if(fmt==='banner')return k2==='head'||k2==='date'; if(fmt==='carousel'&&k2==='logo')return false; return true; };
+    const put=(key,cls,html,fs)=>{ if(!has(key,k))return; const e=st.els[key]; if(e.x===0&&e.y===0&&key!=='head')return;
+      const al=e.align||'center'; const isAct=(ACT&&ACT.f===k&&ACT.e===key);
+      els.push(`<div class="el ${cls}${isAct?' act':''}" data-f="${k}" data-e="${key}" style="left:${e.x}%;top:${e.y}%;font-size:${fs}px;text-align:${al}">${html}</div>`); };
+    put('disc','disc',esc(V.p5),f.disc||1);
+    put('head','head',esc(V.p1),f.head);
+    put('date','date',`<span style="font-weight:600">${k==='banner'?'':'✳ '}${esc(V.p4)}</span>`,f.date);
+    put('sub','sub',esc(V.p3),f.sub||1);
+    put('offer','offer',`<div class="hr"></div>${esc(V.p2)}<div class="hr"></div>`,f.cond||1);
+    if(f.logo) put('logo','logo',`<img src="${dark?LOGO_B:LOGO_W}" style="height:${f.logoH}px">`,10);
+    let bg;
+    if(mode==='photo'&&IMG){ bg=`<div class="bg" data-f="${k}" style="background-image:url('${IMG}');background-position:${st.focal.x}% ${st.focal.y}%"></div>`; }
+    else { bg=`<div class="bg" data-f="${k}" style="background:${mode==='beige'?'var(--beige)':'var(--blue)'};cursor:default"></div>`; }
+    const scrim=(mode==='photo'&&IMG&&!dark)?`<div class="scrim" style="background:linear-gradient(180deg,rgba(0,0,0,.34),rgba(0,0,0,.05) 32%,rgba(0,0,0,.05) 60%,rgba(0,0,0,.44))"></div>`:'';
+    const foc=(mode==='photo'&&IMG)?`<div class="focus" style="left:${st.focal.x}%;top:${st.focal.y}%"></div>`:'';
+    return `<div class="card">
+      <div class="bar"><span class="nm">${k} · ${f.w}×${f.h}</span>
+        <span class="tg"><button data-cf="${k}" data-c="light" class="${dark?'':'on'}">свет</button><button data-cf="${k}" data-c="dark" class="${dark?'on':''}">тёмн</button></span></div>
+      <div class="scaleWrap" style="width:${sw}px;height:${sh}px">
+        <div class="canvas${dark?' dark':''}" style="width:${f.w}px;height:${f.h}px;transform:scale(${sc})">${bg}${scrim}${foc}${els.join('')}</div>
+      </div></div>`;
+  }).join('');
+  bindDrag();
+}
+function bindDrag(){
+  document.querySelectorAll('.el').forEach(el=>{
+    el.addEventListener('mousedown',e=>{
+      e.preventDefault(); e.stopPropagation();
+      const cv=el.closest('.canvas'), r=cv.getBoundingClientRect();
+      const f=el.dataset.f, key=el.dataset.e;
+      ACT={f:f,e:key}; showAlignBar();
+      const move=ev=>{ let x=((ev.clientX-r.left)/r.width)*100, y=((ev.clientY-r.top)/r.height)*100;
+        x=Math.max(2,Math.min(98,x)); y=Math.max(2,Math.min(98,y));
+        L[f].els[key]={x:Math.round(x*10)/10,y:Math.round(y*10)/10}; el.style.left=x+'%'; el.style.top=y+'%'; };
+      const up=()=>{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);};
+      document.addEventListener('mousemove',move); document.addEventListener('mouseup',up);
+    });
+  });
+  document.querySelectorAll('.bg').forEach(bg=>{
+    bg.addEventListener('click',e=>{
+      if(bgMode()!=='photo'||!IMG)return;
+      const r=bg.getBoundingClientRect(); const f=bg.dataset.f;
+      let x=((e.clientX-r.left)/r.width)*100, y=((e.clientY-r.top)/r.height)*100;
+      L[f].focal={x:Math.round(x),y:Math.round(y)}; render();
+    });
+  });
+  document.querySelectorAll('[data-cf]').forEach(b=>{
+    b.addEventListener('click',()=>{ L[b.dataset.cf].color=b.dataset.c; render(); });
+  });
+}
+function showAlignBar(){
+  document.querySelectorAll('.alignbar').forEach(x=>x.remove());
+  if(!ACT)return;
+  const sel=document.querySelector(`.el[data-f="${ACT.f}"][data-e="${ACT.e}"]`);
+  if(!sel)return;
+  const cur=(L[ACT.f].els[ACT.e].align)||'center';
+  const bar=document.createElement('div'); bar.className='alignbar';
+  bar.style.left=sel.style.left; bar.style.top=sel.style.top;
+  bar.innerHTML=['left','center','right'].map(a=>`<button data-a="${a}" class="${a===cur?'on':''}">${a==='left'?'\u2190':a==='right'?'\u2192':'\u2261'}</button>`).join('');
+  sel.parentNode.appendChild(bar);
+  bar.querySelectorAll('button').forEach(b=>b.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();L[ACT.f].els[ACT.e].align=b.dataset.a;render();showAlignBar();}));
+}
+document.addEventListener('mousedown',e=>{ if(!e.target.closest('.el')&&!e.target.closest('.alignbar')){ if(ACT){ACT=null; document.querySelectorAll('.alignbar').forEach(x=>x.remove());} } });
+$('load').addEventListener('click',()=>{ try{ V=JSON.parse($('vars').value); render(); }catch(e){ alert('P1–P5 не читаются как JSON'); } });
+$('bgseg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ $('bgseg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('photobox').style.display=b.dataset.m==='photo'?'block':'none'; render(); }));
+$('bgurl').addEventListener('input',e=>{ IMG=e.target.value.trim()||null; render(); });
+$('bgfile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return; const rd=new FileReader(); rd.onload=()=>{IMG=rd.result;render();}; rd.readAsDataURL(f); });
+$('save').addEventListener('click',()=>{ const j=JSON.stringify(L); $('out').value=j; $('out').select(); try{document.execCommand('copy');}catch(e){} });
+$('reset').addEventListener('click',()=>{ initState(); render(); });
+render();
+</script>
