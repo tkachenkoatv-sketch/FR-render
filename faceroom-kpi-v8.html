@@ -1,0 +1,426 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FaceRoom · KPI отдела маркетинга</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#4E7C8C;--blue2:#8EC5DA;--beige:#DFD7C8;--paper:#F4F2ED;--ink:#1A1A1A;--gray:#7A7A7A;
+ --line:#E4E0D6;--ok:#5B8C6E;--warn:#C89A3C;--bad:#B5564E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.55 Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 72px}
+h1{font:600 19px/1.3 Montserrat;margin:0} h2{font:500 15px/1.3 Montserrat;margin:0}
+.muted{color:var(--gray)} .tiny{font-size:12px} .sm{font-size:13px}
+.eyebrow{font:500 11px/1 Montserrat;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:7px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+ border-bottom:2px solid var(--blue);padding-bottom:13px;margin-bottom:14px}
+select,input{font:400 14px Montserrat;color:var(--ink);background:#fff;border:1px solid var(--line);
+ border-radius:6px;padding:7px 10px;outline:none;width:100%}
+select:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(78,124,140,.14)}
+input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+label.f{display:block;font:400 11px Montserrat;color:var(--gray);margin-bottom:3px}
+nav{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:18px}
+nav button{font:500 13px Montserrat;border:0;background:none;color:var(--gray);padding:8px 14px;border-radius:7px;cursor:pointer;width:auto}
+nav button:hover{background:#fff}
+nav button[aria-current=true]{background:var(--blue);color:#fff}
+nav .sep{width:1px;background:var(--line);margin:4px 6px}
+button.act{font:500 14px Montserrat;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:10px 20px;cursor:pointer;width:auto}
+button.act:hover{background:#3F6674}
+button.x{border:0;background:none;color:var(--gray);cursor:pointer;font-size:17px;line-height:1;padding:2px 6px;width:auto}
+button.x:hover{color:var(--bad)}
+.chip{font:400 12px Montserrat;border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 12px;
+ cursor:pointer;color:var(--gray);width:auto}
+.chip[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:10px;margin-bottom:22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.card .v{font:600 24px/1.1 Montserrat;font-variant-numeric:tabular-nums}
+.card .s{font-size:12px;color:var(--gray);margin-top:3px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.panel>.head{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;
+ align-items:baseline;gap:12px;background:var(--paper);flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font:500 11px Montserrat;letter-spacing:.05em;text-transform:uppercase;color:var(--gray);text-align:right;
+ padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:right;font-size:14px}
+td:first-child{text-align:left} tr:last-child td{border-bottom:0}
+tr.grp td{background:var(--paper);font:500 11px Montserrat;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:8px 12px}
+tr.total td{font-weight:600;background:var(--paper)}
+.plan{font-size:11px;color:var(--gray);display:block;font-weight:400}
+.neg{color:var(--bad)} .pos{color:var(--ok)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;vertical-align:1px}
+.pace{width:120px;margin-left:auto}
+.track{position:relative;height:5px;background:var(--beige);border-radius:3px}
+.track+.track{margin-top:5px}
+.fill{height:5px;border-radius:3px}
+.mark{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--ink);opacity:.45}
+.pacelab{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:3px}
+.grid{display:grid;gap:10px;padding:13px 16px;align-items:end;border-bottom:1px solid var(--line)}
+.g5{grid-template-columns:1.5fr .9fr 1.1fr 1.1fr 1fr}
+.g4{grid-template-columns:1.1fr .9fr 1.1fr 2fr auto}
+.nm{font-size:14px;font-weight:500}
+.note{background:var(--beige);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.6;margin-bottom:20px}
+.msg{color:var(--ok);font-size:13px;font-weight:500;margin-left:10px}
+.warnbox{background:#F7F0E1;border-left:3px solid var(--warn);border-radius:0 6px 6px 0;padding:10px 14px;font-size:13px;margin-bottom:16px}
+.delta{font-size:11px;color:var(--ok)}
+@media(max-width:860px){.g5,.g4{grid-template-columns:1fr 1fr}.g5>div:first-child,.g4>div:first-child{grid-column:1/-1}
+ table{font-size:13px}th,td{padding:9px 7px}.pace{width:88px}}
+</style>
+
+<div class="wrap">
+<header>
+  <div><div class="eyebrow">FaceRoom · отдел маркетинга</div><h1>План и факт по направлениям</h1></div>
+  <div style="display:flex;gap:10px;align-items:flex-end">
+    <div style="width:170px"><label class="f" for="mo">Месяц</label><select id="mo"></select></div>
+    <div style="width:150px"><label class="f" for="dt">Данные на дату</label><input type="date" id="dt"></div>
+    <div style="width:120px"><label class="f" for="mr">С/с услуги, %</label><input type="number" id="mr" min="0" max="90" step="1"></div>
+  </div>
+</header>
+<nav id="nav"></nav>
+<div id="snaps" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:18px"></div>
+<div id="view"></div>
+</div>
+
+<script>
+/* Адрес веб-приложения и токен вводятся на экране при первом открытии
+   и запоминаются в этом браузере. Править файл не нужно. */
+let API_URL='', TOKEN='';
+function cfgLoad(){try{API_URL=localStorage.getItem('fr_api')||'';TOKEN=localStorage.getItem('fr_token')||''}catch(e){}}
+function cfgSave(u,t){API_URL=u.trim();TOKEN=t.trim();
+  try{localStorage.setItem('fr_api',API_URL);localStorage.setItem('fr_token',TOKEN)}catch(e){}}
+
+const PAGES=[
+ {id:'smm',  n:'СММ',              ch:[['ig','Instagram'],['blog','Блогеры'],['vk','ВКонтакте'],['tg','Telegram']]},
+ {id:'prspb',n:'PR СПб',           ch:[['corp','Корпоративная скидка'],['pspb','Партнёрства СПб']]},
+ {id:'prmsk',n:'PR МСК',           ch:[['pmsk','Партнёрства МСК']]},
+ {id:'maps', n:'Карты',            ch:[['ymap','Яндекс карты'],['gmap','Google карты'],['gis','2ГИС']]},
+ {id:'site', n:'Сайт',             ch:[['site','Сайт Faceroom']]},
+ {id:'out',  n:'Наружная реклама', ch:[['out','Наружная реклама']]},
+ {id:'other',n:'Вне KPI',          ch:[['fit','Фитмост'],['ref','Реферальная программа']], nokpi:true}
+];
+const ALL=PAGES.flatMap(p=>p.ch.map(([id,n])=>({id,n,page:p.id})));
+const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const KEY=m=>'fr-kpi3-'+m, PKEY='fr-kpi3-pcts';
+
+let S={mo:ymNow(),dt:null,view:'dash',d:null,pcts:{}};
+
+function ymNow(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function daysIn(m){const[y,mm]=m.split('-').map(Number);return new Date(y,mm,0).getDate()}
+function progress(m){const[y,mm]=m.split('-').map(Number),now=new Date(),dn=daysIn(m);
+ if(now.getFullYear()>y||(now.getFullYear()===y&&now.getMonth()+1>mm))return 1;
+ if(now.getFullYear()<y||(now.getFullYear()===y&&now.getMonth()+1<mm))return 0;
+ return now.getDate()/dn}
+const num=n=>(Math.round(n)||0).toLocaleString('ru-RU');
+const pc=n=>(isFinite(n)?Math.round(n*100):0)+'%';
+const esc=s=>String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+const dm=s=>s?s.slice(8,10)+'.'+s.slice(5,7):'';
+const blank=()=>({plan:0,mrate:45,ch:{},spend:[],snaps:{}});
+
+function ch(id){if(!S.d.ch[id])S.d.ch[id]={pct:S.pcts[id]||0,budget:0,cplan:0};return S.d.ch[id]}
+function dates(){return Object.keys(S.d.snaps).sort()}
+function lastDate(){const a=dates();return a.length?a[a.length-1]:null}
+function prevDate(d){const a=dates().filter(x=>x<d);return a.length?a[a.length-1]:null}
+function snapVal(d,id){const s=(S.d.snaps[d]||{})[id];return s||{clients:0,avg:0,cost:0}}
+function carried(d,id){
+  if(S.d.snaps[d]&&S.d.snaps[d][id])return snapVal(d,id);
+  const p=prevDate(d);return p?snapVal(p,id):{clients:0,avg:0,cost:0};
+}
+
+function calc(id){
+  const c=ch(id), planCl=Math.round(S.d.plan*(c.pct||0)/100);
+  const ld=lastDate(), s=ld?snapVal(ld,id):{clients:0,avg:0,cost:0};
+  const cl=+s.clients||0, rev=cl*(+s.avg||0), cost=+s.cost||0;
+  const spend=S.d.spend.filter(x=>x.ch===id).reduce((a,x)=>a+(+x.sum||0),0);
+  const total=spend+cost, budget=+c.budget||0, cplan=+c.cplan||0, r=(S.d.mrate||0)/100;
+  return {planCl,cl,rev,cost,spend,total,budget,cplan,pct:c.pct||0,avg:+s.avg||0,
+    cac:cl>0?total/cl:0, cacPlan:planCl>0&&(budget+cplan)>0?(budget+cplan)/planCl:0,
+    romiR:total>0?rev/total-1:null,
+    romiM:total>0?(rev*(1-r)-total)/total:null,
+    pCl:planCl>0?cl/planCl:0, pB:budget>0?spend/budget:0, pC:cplan>0?cost/cplan:0};
+}
+function status(c){const t=progress(S.mo);
+ const used=(c.budget+c.cplan)>0?(c.spend+c.cost)/(c.budget+c.cplan):0;
+ if((c.budget+c.cplan)>0&&used-c.pCl>0.20)return'bad';
+ if(c.pCl>=t-0.05&&(c.cacPlan===0||c.cac<=c.cacPlan*1.1))return'ok';return'warn'}
+const COL={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--bad)'};
+
+function bars(c){const t=progress(S.mo)*100,st=status(c);
+ const used=(c.budget+c.cplan)>0?(c.spend+c.cost)/(c.budget+c.cplan):0;
+ const b=(v,col)=>`<div class="track"><div class="fill" style="width:${Math.min(v*100,100)}%;background:${col}"></div><div class="mark" style="left:${t}%"></div></div>`;
+ return `<div class="pace"><div class="pacelab"><span>${pc(c.pCl)}</span><span>${pc(used)}</span></div>${b(c.pCl,COL[st])}${b(used,'var(--blue2)')}</div>`}
+
+/* ---------- дашборд ---------- */
+function dash(){
+  const t=progress(S.mo), ld=lastDate();
+  let T={pl:0,cl:0,bud:0,cpl:0,sp:0,cost:0,rev:0};
+  let K={pl:0,cl:0,tot:0,bud:0}, N={pl:0,cl:0,tot:0,bud:0};
+  let body='';
+  PAGES.forEach(p=>{
+    let g={pl:0,cl:0,bud:0,sp:0}, A=p.nokpi?N:K;
+    const rs=p.ch.map(([id,n])=>{const c=calc(id);
+      T.pl+=c.planCl;T.cl+=c.cl;T.bud+=c.budget;T.cpl+=c.cplan;T.sp+=c.spend;T.cost+=c.cost;T.rev+=c.rev;
+      A.pl+=c.planCl;A.cl+=c.cl;A.tot+=c.total;A.bud+=c.budget+c.cplan;
+      g.pl+=c.planCl;g.cl+=c.cl;g.bud+=c.budget+c.cplan;g.sp+=c.total;
+      const cb=c.cacPlan>0&&c.cac>c.cacPlan*1.1;
+      return `<tr><td><span class="dot" style="background:${COL[status(c)]}"></span>${n}<span class="plan">${c.pct}% плана отдела</span></td>
+        <td>${c.cl} / ${c.planCl}<span class="plan">прогноз ${t>0.05?Math.round(c.cl/t):'—'}</span></td>
+        <td>${num(c.total)}<span class="plan">из ${num(c.budget+c.cplan)}</span></td>
+        <td class="${cb?'neg':''}">${c.cac?num(c.cac):'—'}<span class="plan">план ${c.cacPlan?num(c.cacPlan):'—'}</span></td>
+        <td class="${c.romiR<0?'neg':''}">${c.romiR===null?'—':pc(c.romiR)}</td>
+        <td class="${c.romiM<0?'neg':c.romiM>0?'pos':''}">${c.romiM===null?'—':pc(c.romiM)}</td>
+        <td>${bars(c)}</td></tr>`}).join('');
+    body+=`<tr class="grp"><td colspan="7">${p.n} · ${g.cl}/${g.pl} клиентов · ${num(g.sp)} из ${num(g.bud)} ₽${p.nokpi?' · не входит в KPI сотрудников':''}</td></tr>`+rs;
+  });
+  const tot=T.sp+T.cost, r=(S.d.mrate||0)/100;
+  const romiR=tot>0?T.rev/tot-1:null, romiM=tot>0?(T.rev*(1-r)-tot)/tot:null;
+  const fc=t>0.05?Math.round(T.cl/t):null;
+  const dist=ALL.reduce((a,x)=>a+(ch(x.id).pct||0),0);
+  return (Math.abs(dist-100)>0.5&&S.d.plan>0?`<div class="warnbox">Доли каналов дают ${Math.round(dist*10)/10}% вместо 100%.
+    ${dist<100?'Не распределено '+Math.round(S.d.plan*(100-dist)/100)+' клиентов':'Распределено на '+Math.round(S.d.plan*(dist-100)/100)+' клиентов больше плана'} — поправьте на вкладке «План месяца».</div>`:'')
+  +(ld?'':`<div class="warnbox">Ещё нет ни одного среза данных. Зайдите в направление и заполните клиентов на сегодняшнюю дату.</div>`)
+  +`<div class="cards">
+    <div class="card"><div class="k">План отдела</div><div class="v">${S.d.plan||'—'}</div><div class="s">распределено ${Math.round(dist)}%</div></div>
+    <div class="card"><div class="k">Новые клиенты</div><div class="v">${T.cl}</div><div class="s">${ld?'на '+dm(ld):'нет данных'}</div></div>
+    <div class="card"><div class="k">Вне KPI</div><div class="v">${N.cl} / ${N.pl}</div>
+      <div class="s">${S.d.plan>0?pc(N.pl/S.d.plan)+' плана отдела':'—'}</div></div>
+    <div class="card"><div class="k">Прошло месяца</div><div class="v">${pc(t)}</div><div class="s">${Math.round(t*daysIn(S.mo))} из ${daysIn(S.mo)} дней</div></div>
+    <div class="card"><div class="k">Прогноз</div><div class="v" style="color:${fc&&S.d.plan&&fc<S.d.plan?'var(--bad)':'inherit'}">${fc??'—'}</div>
+      <div class="s">${fc&&S.d.plan?(fc-S.d.plan>=0?'+':'')+(fc-S.d.plan)+' к плану':'нужны данные'}</div></div>
+    <div class="card"><div class="k">Затраты</div><div class="v">${(T.bud+T.cpl)>0?pc(tot/(T.bud+T.cpl)):'—'}</div>
+      <div class="s">${num(tot)} из ${num(T.bud+T.cpl)} ₽</div></div>
+  </div>
+  <div class="panel"><div class="head"><h2>Направления и каналы</h2>
+    <span class="tiny muted">затраты = деньги + себестоимость · чёрточка показывает, сколько месяца прошло</span></div>
+  <table><thead><tr><th>Канал</th><th>Клиенты</th><th>Затраты, ₽</th><th>Цена клиента</th>
+    <th>ROMI выручка</th><th>ROMI маржа</th><th>Темп</th></tr></thead><tbody>${body}
+  <tr class="total"><td>Итого</td><td>${T.cl} / ${T.pl}</td><td>${num(tot)}</td><td>${T.cl>0?num(tot/T.cl):'—'}</td>
+    <td class="${romiR<0?'neg':''}">${romiR===null?'—':pc(romiR)}</td>
+    <td class="${romiM<0?'neg':''}">${romiM===null?'—':pc(romiM)}</td><td></td></tr></tbody></table></div>`;
+}
+
+/* ---------- страница направления ---------- */
+function page(pid){
+  const p=PAGES.find(x=>x.id===pid), d=S.dt, pv=prevDate(d);
+  let g={pl:0,cl:0,bud:0,cpl:0,sp:0,cost:0};
+  const rows=p.ch.map(([id,n])=>{const c=calc(id);
+    g.pl+=c.planCl;g.cl+=c.cl;g.bud+=c.budget;g.cpl+=c.cplan;g.sp+=c.spend;g.cost+=c.cost;
+    return `<tr><td><span class="dot" style="background:${COL[status(c)]}"></span>${n}<span class="plan">${c.pct}% плана отдела</span></td>
+      <td>${c.cl} / ${c.planCl}</td><td>${num(c.spend)}<span class="plan">остаток ${num(c.budget-c.spend)}</span></td>
+      <td>${num(c.cost)}<span class="plan">из ${num(c.cplan)}</span></td>
+      <td class="${c.cacPlan>0&&c.cac>c.cacPlan*1.1?'neg':''}">${c.cac?num(c.cac):'—'}<span class="plan">план ${c.cacPlan?num(c.cacPlan):'—'}</span></td>
+      <td class="${c.romiR<0?'neg':''}">${c.romiR===null?'—':pc(c.romiR)}</td><td>${bars(c)}</td></tr>`}).join('');
+
+  const facts=p.ch.map(([id,n])=>{const r=carried(d,id), o=pv?snapVal(pv,id):null;
+    const dl=o?(+r.clients||0)-(+o.clients||0):null;
+    return `<div class="grid g5"><div class="nm">${n}${dl!==null?`<span class="delta"> с ${dm(pv)}: ${dl>=0?'+':''}${dl}</span>`:''}</div>
+      <div><label class="f">Клиентов всего</label><input type="number" min="0" data-w="clients" data-id="${id}" value="${r.clients||''}" placeholder="0"></div>
+      <div><label class="f">Средняя выручка, ₽</label><input type="number" min="0" data-w="avg" data-id="${id}" value="${r.avg||''}" placeholder="0"></div>
+      <div><label class="f">Себестоимость всего, ₽</label><input type="number" min="0" data-w="cost" data-id="${id}" value="${r.cost||''}" placeholder="0"></div>
+      <div><label class="f">Выручка</label><div style="padding:8px 0;font-variant-numeric:tabular-nums">${num((+r.clients||0)*(+r.avg||0))} ₽</div></div>
+    </div>`}).join('');
+
+  const list=S.d.spend.map((s,i)=>({s,i})).filter(x=>p.ch.some(([id])=>id===x.s.ch)).reverse();
+  const sp=list.length?list.map(({s,i})=>`<tr><td class="sm muted" style="width:80px">${dm(s.date)}</td>
+      <td style="text-align:left">${esc(ALL.find(a=>a.id===s.ch)?.n||s.ch)}</td><td style="width:110px">${num(s.sum)} ₽</td>
+      <td style="text-align:left" class="sm">${esc(s.note)}</td>
+      <td style="width:36px"><button class="x" data-del="${s.id}" aria-label="Удалить">×</button></td></tr>`).join('')
+    :'<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Трат пока нет</td></tr>';
+
+  return `<div class="cards">
+    <div class="card"><div class="k">Клиенты</div><div class="v">${g.cl} / ${g.pl}</div><div class="s">${g.pl>0?pc(g.cl/g.pl):'—'} плана</div></div>
+    <div class="card"><div class="k">Бюджет</div><div class="v">${num(g.sp)} ₽</div><div class="s">из ${num(g.bud)} · остаток ${num(g.bud-g.sp)}</div></div>
+    <div class="card"><div class="k">Себестоимость</div><div class="v">${num(g.cost)} ₽</div><div class="s">из ${num(g.cpl)} плановых</div></div>
+    <div class="card"><div class="k">Цена клиента</div><div class="v">${g.cl>0?num((g.sp+g.cost)/g.cl):'—'}</div><div class="s">деньги + себестоимость</div></div>
+  </div>
+
+  <div class="panel"><div class="head"><h2>Каналы направления</h2></div>
+    <table><thead><tr><th>Канал</th><th>Клиенты</th><th>Потрачено</th><th>Себестоимость</th><th>Цена клиента</th><th>ROMI выручка</th><th>Темп</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+
+  <div class="panel"><div class="head"><h2>Срез на ${dm(d)} ${MONTHS[+S.mo.split('-')[1]-1]}</h2>
+    <span class="tiny muted">значения накопительные с начала месяца, не за неделю</span></div>${facts}
+    <div style="padding:14px 16px"><button class="act" id="savew">Сохранить срез</button><span class="msg" id="m1"></span></div></div>
+
+  <div class="panel"><div class="head"><h2>Траты из бюджета</h2><span class="tiny muted">комментарий нигде не считается, только виден</span></div>
+    <div class="grid g4">
+      <div><label class="f">Дата</label><input type="date" id="sd" value="${d}"></div>
+      <div><label class="f">Сумма, ₽</label><input type="number" min="0" id="ss" placeholder="0"></div>
+      <div><label class="f">Канал</label><select id="sc">${p.ch.map(([id,n])=>`<option value="${id}">${n}</option>`).join('')}</select></div>
+      <div><label class="f">На что потрачено</label><input id="sn" placeholder="например, продвижение постов"></div>
+      <div><button class="act" id="addsp">Добавить</button></div>
+    </div>
+    <table><tbody>${sp}</tbody></table></div>`;
+}
+
+/* ---------- план месяца ---------- */
+function planPage(){
+  const dist=ALL.reduce((a,x)=>a+(ch(x.id).pct||0),0);
+  let body='';
+  PAGES.forEach(p=>{
+    body+=`<tr class="grp"><td colspan="6">${p.n}</td></tr>`;
+    p.ch.forEach(([id,n])=>{const c=ch(id), pl=Math.round(S.d.plan*(c.pct||0)/100), tot=(+c.budget||0)+(+c.cplan||0);
+      body+=`<tr><td>${n}</td>
+        <td style="width:100px"><input type="number" min="0" max="100" step="0.5" data-p="pct" data-id="${id}" value="${c.pct||''}" placeholder="0"></td>
+        <td style="width:80px">${pl}</td>
+        <td style="width:140px"><input type="number" min="0" data-p="budget" data-id="${id}" value="${c.budget||''}" placeholder="0"></td>
+        <td style="width:140px"><input type="number" min="0" data-p="cplan" data-id="${id}" value="${c.cplan||''}" placeholder="0"></td>
+        <td style="width:110px">${pl>0&&tot>0?num(tot/pl):'—'}</td></tr>`})
+  });
+  return `<div class="panel"><div class="head"><h2>План на ${MONTHS[+S.mo.split('-')[1]-1]} ${S.mo.split('-')[0]}</h2></div>
+    <div class="grid" style="grid-template-columns:220px 1fr">
+      <div><label class="f">План новых клиентов на отдел</label><input type="number" min="0" id="dp" value="${S.d.plan||''}" placeholder="0"></div>
+      <div class="sm muted" style="padding-bottom:9px">Распределено ${Math.round(dist*10)/10}% ·
+        ${dist<100?'осталось '+Math.round((100-dist)*10)/10+'%':dist>100?'перебор '+Math.round((dist-100)*10)/10+'%':'ровно'}</div>
+    </div>
+    <table><thead><tr><th>Канал</th><th>Доля, %</th><th>План клиентов</th><th>Бюджет, ₽</th><th>План себестоимости, ₽</th><th>Плановая цена клиента</th></tr></thead>
+    <tbody>${body}</tbody></table>
+    <div style="padding:14px 16px"><span class="msg">Изменения сохраняются сразу</span></div></div>
+    <div class="note">Доли переносятся на следующий месяц автоматически. Бюджеты и план себестоимости — нет, их заносите заново.</div>`;
+}
+
+/* ---------- подключение ---------- */
+function setupScreen(){
+  return `<div class="panel" style="max-width:640px">
+    <div class="head"><h2>Подключение к таблице</h2></div>
+    <div style="padding:18px 16px">
+      <p class="sm muted" style="margin:0 0 18px">Два значения из Apps Script. Вводятся один раз и запоминаются
+        в этом браузере — на другом компьютере их нужно будет ввести заново.</p>
+      <div style="margin-bottom:14px">
+        <label class="f" for="cu">Адрес веб-приложения</label>
+        <input id="cu" value="${esc(API_URL)}" placeholder="https://script.google.com/macros/s/…/exec">
+        <div class="tiny muted" style="margin-top:4px">Развернуть → Управление развёртываниями. Заканчивается на /exec</div>
+      </div>
+      <div style="margin-bottom:20px">
+        <label class="f" for="ct">Токен</label>
+        <input id="ct" value="${esc(TOKEN)}" placeholder="fr-kpi-2026-x7k29mqp">
+        <div class="tiny muted" style="margin-top:4px">Та же строка, что в блоке CFG в начале скрипта</div>
+      </div>
+      <button class="act" id="cs">Подключить</button><span class="msg" id="m3"></span>
+    </div></div>`;
+}
+
+/* ---------- каркас ---------- */
+function nav(){
+  const items=[['dash','Дашборд'],...PAGES.map(p=>[p.id,p.n]),['plan','План месяца'],['cfg','Подключение']];
+  document.getElementById('nav').innerHTML=items.map(([id,n])=>
+    (id==='plan'?'<span class="sep"></span>':'')+`<button data-v="${id}" aria-current="${S.view===id}">${n}</button>`).join('');
+  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;render()});
+}
+function snapChips(){
+  const box=document.getElementById('snaps'), ds=dates();
+  if(!PAGES.some(p=>p.id===S.view)||!ds.length){box.innerHTML='';return}
+  box.innerHTML='<span class="tiny muted" style="margin-right:4px">Срезы месяца:</span>'+
+    ds.map(x=>`<button class="chip" data-dt="${x}" aria-pressed="${x===S.dt}">${dm(x)}</button>`).join('');
+  box.querySelectorAll('[data-dt]').forEach(b=>b.onclick=()=>{S.dt=b.dataset.dt;render()});
+}
+function selects(){
+  const mo=document.getElementById('mo');
+  if(!mo.options.length){const now=new Date();
+    for(let i=-8;i<=3;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+      mo.add(new Option(MONTHS[d.getMonth()]+' '+d.getFullYear(),d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')))}
+    mo.value=S.mo}
+  const dt=document.getElementById('dt'), dn=daysIn(S.mo);
+  dt.min=S.mo+'-01'; dt.max=S.mo+'-'+String(dn).padStart(2,'0'); dt.value=S.dt;
+  document.getElementById('mr').value=S.d?S.d.mrate:45;
+}
+
+function render(){
+  selects();nav();snapChips();
+  const v=document.getElementById('view');
+  v.innerHTML=S.view==='cfg'?setupScreen():S.view==='dash'?dash():S.view==='plan'?planPage():page(S.view);
+
+  const cs=v.querySelector('#cs');
+  if(cs) cs.onclick=async()=>{
+    const u=v.querySelector('#cu').value, t=v.querySelector('#ct').value;
+    if(!u.trim()||!t.trim()){flash('m3','Заполните оба поля');return}
+    cfgSave(u,t); S.view='plan'; await load()};
+
+  const draft={};
+  v.querySelectorAll('[data-w]').forEach(i=>i.onchange=()=>{
+    (draft[i.dataset.id]=draft[i.dataset.id]||{})[i.dataset.w]=+i.value||0});
+  const sw=v.querySelector('#savew');
+  if(sw) sw.onclick=async()=>{
+    const snap={};
+    v.querySelectorAll('[data-w]').forEach(i=>{
+      const id=i.dataset.id; if(!snap[id])snap[id]={clients:0,avg:0,cost:0};
+      snap[id][i.dataset.w]=+i.value||0});
+    Object.keys(S.d.snaps[S.dt]||{}).forEach(id=>{if(!snap[id])snap[id]=S.d.snaps[S.dt][id]});
+    if(await api('saveSnap',{month:S.mo,date:S.dt,rows:snap})){render();flash('m1','Срез сохранён')}};
+
+  v.querySelectorAll('[data-p]').forEach(i=>i.onchange=async()=>{
+    const c=ch(i.dataset.id), val=+i.value||0; c[i.dataset.p]=val;
+    await savePlan();render()});
+  const dp=v.querySelector('#dp'); if(dp) dp.onchange=async()=>{S.d.plan=+dp.value||0;await savePlan();render()};
+
+  const add=v.querySelector('#addsp');
+  if(add) add.onclick=async()=>{
+    const sum=+v.querySelector('#ss').value||0;
+    if(sum<=0){v.querySelector('#ss').focus();return}
+    if(await api('addSpend',{month:S.mo,date:v.querySelector('#sd').value,ch:v.querySelector('#sc').value,
+      sum,note:v.querySelector('#sn').value.trim()})) render()};
+  v.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+    if(await api('delSpend',{month:S.mo,id:b.dataset.del})) render()});
+}
+function flash(id,t){const e=document.getElementById(id);if(e){e.textContent=t;setTimeout(()=>e.textContent='',2500)}}
+
+function banner(text,bad){
+  let b=document.getElementById('bnr');
+  if(!b){b=document.createElement('div');b.id='bnr';
+    b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:22px;padding:10px 20px;border-radius:8px;font:500 13px Montserrat;z-index:9;box-shadow:0 4px 14px rgba(0,0,0,.12)';
+    document.body.appendChild(b)}
+  b.style.background=bad?'var(--bad)':'var(--blue)';b.style.color='#fff';
+  b.textContent=text;b.style.display='block';
+  clearTimeout(banner.t);banner.t=setTimeout(()=>b.style.display='none',bad?7000:1600);
+}
+
+/** Один запрос к таблице. Content-Type намеренно text/plain:
+    Apps Script не отвечает на preflight, а с application/json браузер его пришлёт. */
+async function api(action,payload){
+  try{
+    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(Object.assign({token:TOKEN,action},payload))});
+    const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'Таблица вернула ошибку');
+    if(j.data) applyData(j.data);
+    return true;
+  }catch(e){banner('Не сохранилось: '+e.message,true);return false}
+}
+
+function applyData(d){
+  S.d=d;
+  S.d.spend=S.d.spend||[];S.d.snaps=S.d.snaps||{};S.d.ch=S.d.ch||{};
+  if(!S.d.mrate)S.d.mrate=45;
+  ALL.forEach(x=>{if(!S.d.ch[x.id])S.d.ch[x.id]={pct:S.pcts[x.id]||0,budget:0,cplan:0}});
+}
+
+async function savePlan(){
+  return api('savePlan',{month:S.mo,plan:S.d.plan,mrate:S.d.mrate,ch:S.d.ch});
+}
+
+async function load(){
+  cfgLoad();
+  if(!API_URL||!TOKEN){S.d=blank();ALL.forEach(x=>{S.d.ch[x.id]={pct:0,budget:0,cplan:0}});
+    S.dt=new Date().toISOString().slice(0,10);S.view='cfg';render();return}
+  document.getElementById('view').innerHTML='<div class="panel" style="padding:34px;text-align:center;color:var(--gray)">Загружаю данные из таблицы…</div>';
+  try{
+    const r=await fetch(API_URL+'?token='+encodeURIComponent(TOKEN)+'&action=load&month='+S.mo);
+    const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'Таблица вернула ошибку');
+    S.pcts=j.pcts||{};
+    applyData(j.data);
+  }catch(e){
+    S.d=blank();S.pcts={};
+    ALL.forEach(x=>{S.d.ch[x.id]={pct:0,budget:0,cplan:0}});
+    banner('Нет связи с таблицей: '+e.message+'. Проверьте адрес и токен в начале файла.',true);
+  }
+  const today=new Date().toISOString().slice(0,10);
+  S.dt=lastDate()||(today.slice(0,7)===S.mo?today:S.mo+'-01');
+  render();
+}
+document.getElementById('mo').onchange=async e=>{S.mo=e.target.value;await load()};
+document.getElementById('dt').onchange=e=>{S.dt=e.target.value;render()};
+document.getElementById('mr').onchange=async e=>{S.d.mrate=Math.max(0,Math.min(90,+e.target.value||0));await savePlan();render()};
+selects();load();
+</script>
