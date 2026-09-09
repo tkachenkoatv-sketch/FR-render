@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Акции — FaceRoom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#4E7C8C; --blue-d:#3C616E; --blue-l:#EAF2F5; --sky:#8EC5DA;
+  --beige:#DFD7C8; --paper:#F4F2ED; --ink:#1A1A1A; --gray:#8A867E; --line:#E4E0D6;
+  --amber:#C08A2A; --amber-l:#FBF2DF; --alarm:#BF453B; --alarm-l:#FBEBE9;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+button,input,select{font-family:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer;padding:0;font-size:15px}
+.wrap{max-width:640px;margin:0 auto;padding:0 0 60px}
+
+.nav{position:sticky;top:0;z-index:20;background:rgba(244,242,237,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:16px 18px 12px;position:relative}
+.nav h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.nav .sub{font-size:12px;color:var(--gray);margin-top:2px}
+.nav .status{position:absolute;right:18px;top:16px;font-size:11px;padding:4px 10px;border-radius:20px;background:var(--beige)}
+.nav .status.ro{background:var(--alarm-l);color:var(--alarm)}
+
+.today{margin:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 18px 14px}
+.today.hot{border-color:#EFC9C4;background:linear-gradient(180deg,#fff 0%,var(--alarm-l) 340%)}
+.today .cap{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin-bottom:2px}
+.today h2{margin:0 0 4px;font-size:18px;font-weight:700}
+.calm{font-size:13px;color:var(--gray)}
+.hotrow{display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--paper);border-radius:10px;margin-top:8px}
+.hotrow.late{background:var(--alarm-l)}
+.hotrow .d{font-size:10px;font-weight:700;color:var(--gray);white-space:nowrap;text-transform:uppercase}
+.hotrow.late .d{color:var(--alarm)}
+.hotrow .n{flex:1;font-size:13px;font-weight:600;min-width:0}
+.hotrow .n em{display:block;font-style:normal;font-size:11px;font-weight:400;color:var(--gray)}
+.hotrow button{font-size:11px;font-weight:700;color:#fff;background:var(--blue);padding:6px 10px;border-radius:8px}
+
+.addbtn{display:block;width:calc(100% - 32px);margin:6px 16px 4px;background:var(--blue);color:#fff;font-weight:700;font-size:14px;padding:13px;border-radius:14px;text-align:center}
+.addbtn:active{background:var(--blue-d)}
+
+.plist{padding:6px 16px 0}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;text-align:left;width:100%;display:block}
+.pbar{height:4px;background:var(--beige)}
+.pbar i{display:block;height:100%;background:var(--blue)}
+.phead{display:flex;align-items:center;gap:12px;padding:13px 15px}
+.pname{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.pmeta{font-size:11px;color:var(--gray);margin-top:2px}
+.pmeta b{color:var(--ink);font-weight:600}
+.pdone{font-size:12px;color:var(--gray);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pdone.late{color:var(--alarm);font-weight:700}
+.ptype{flex:none;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--paper);color:var(--gray)}
+
+.archive-toggle{display:block;width:100%;text-align:center;padding:14px;font-size:12px;color:var(--gray);font-weight:600}
+
+.mask{position:fixed;inset:0;background:rgba(26,26,26,.4);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:640px;max-height:88vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column}
+.sheet .grab{width:38px;height:4px;border-radius:2px;background:#D3CEC3;margin:9px auto 4px}
+.sheet .shead{display:flex;align-items:center;gap:10px;padding:6px 16px 12px}
+.sheet .shead h3{margin:0;flex:1;font-size:18px;font-weight:700}
+.sheet .shead .x{color:var(--blue);font-weight:600;font-size:15px}
+.sheet .body{overflow:auto;padding:0 16px 28px}
+
+.wave{padding:10px 0;border-top:1px dashed var(--line)}
+.wave:first-child{border-top:0}
+.wave .wt{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
+.chip-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:7px}
+.chip-row .dot{flex:none;width:11px;height:11px;border-radius:50%;border:2px solid #CFCABF;background:#fff}
+.chip-row.work .dot{background:var(--amber-l);border-color:var(--amber)}
+.chip-row.done{background:var(--blue);border-color:var(--blue)}
+.chip-row.done .dot{background:#fff;border-color:#fff}
+.chip-row.done .grow *{color:#fff}
+.chip-row.skip{opacity:.5}
+.chip-row.skip .grow *{text-decoration:line-through}
+.chip-row.late{background:var(--alarm-l);border-color:#E9B7B1}
+.chip-row .grow{flex:1;min-width:0}
+.chip-row .cn{font-size:14px;font-weight:600}
+.chip-row .cw{font-size:11px;color:var(--gray)}
+.chip-row.done .cw{color:rgba(255,255,255,.75)}
+.chip-row .cd{font-size:11px;font-weight:700;color:var(--gray);white-space:nowrap}
+.chip-row.late .cd{color:var(--alarm)}
+.chip-row .skipbtn{flex:none;font-size:10px;font-weight:700;color:#B9B4AA;padding:4px 7px;border:1px solid var(--line);border-radius:8px}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.field input,.field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cta{display:block;width:100%;background:var(--blue);color:#fff;font-weight:700;font-size:16px;padding:14px;border-radius:14px;margin-top:6px}
+.cta.quiet{background:#fff;color:var(--alarm);border:1px solid var(--line)}
+.hintbox{background:var(--blue-l);border-radius:12px;padding:11px 13px;font-size:12px;color:var(--blue-d);margin:8px 0}
+.note{font-size:12px;color:var(--gray);padding:10px 2px 0;line-height:1.5}
+.empty{text-align:center;padding:40px 20px;color:var(--gray);font-size:13px}
+
+.tabbar{display:flex;gap:6px;padding:12px 16px 4px}
+.tabbtn{flex:1;padding:10px;font-size:13px;font-weight:700;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--gray)}
+.tabbtn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.gsec{margin:0 16px 10px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ghead{display:flex;align-items:center;gap:10px;width:100%;padding:14px 15px;text-align:left;font-size:15px;font-weight:700}
+.ghead .gi{font-size:18px;flex:none}
+.ghead .gc{flex:1}
+.ghead .gx{flex:none;color:var(--gray);font-size:13px;transition:transform .15s}
+.gsec.open .ghead .gx{transform:rotate(180deg)}
+.gbody{display:none;padding:0 15px 16px;font-size:14px;line-height:1.55}
+.gsec.open .gbody{display:block}
+.gbody p{margin:0 0 10px}
+.gbody ul{margin:8px 0;padding-left:20px}
+.gbody li{margin-bottom:5px}
+.gbody h4{margin:16px 0 6px;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--gray)}
+.gbody table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.gbody th,.gbody td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.gbody th{color:var(--gray);font-size:11px;text-transform:uppercase;font-weight:700}
+.gnote{background:var(--blue-l);border-radius:10px;padding:11px 13px;font-size:13px;margin:10px 0;line-height:1.5}
+.gnote.warn{background:var(--alarm-l)}
+.gbadge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:9px;background:var(--beige);margin-bottom:8px}
+.gstep{display:flex;gap:11px;padding-bottom:14px;position:relative}
+.gstep:not(:last-child)::before{content:'';position:absolute;left:10px;top:24px;bottom:0;width:2px;background:var(--line)}
+.gstep .gn{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.gstep .gt{flex:1;font-size:13px}
+.gstep .gt b{display:block;margin-bottom:2px}
+.gstep .gt span{color:var(--gray);font-size:12px}
+
+.vgroup{padding:8px 16px 0}
+.vgroup .vt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin:12px 0 8px}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.vcard.late{border-color:#E9B7B1;background:var(--alarm-l)}
+.vcard.done{opacity:.55}
+.vtop{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.vtop .vn{flex:1;min-width:0}
+.vtop .vn b{display:block;font-size:14px;font-weight:700;letter-spacing:-.01em}
+.vtop .vn em{display:block;font-style:normal;font-size:11px;color:var(--gray);margin-top:2px}
+.vkind{flex:none;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--paper);color:var(--gray)}
+.vctrl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.vctrl select,.vctrl input{font-family:inherit;font-size:11px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.vdue{font-size:11px;font-weight:700;color:var(--gray);white-space:nowrap}
+.vdue.late{color:var(--alarm)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <h1>Акции</h1>
+    <div class="sub">Дата публикации → сроки по каналам считаются автоматически</div>
+    <div class="status" id="status-badge" style="cursor:pointer" title="Нажмите, чтобы сменить ключ доступа">…</div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tabbtn" data-tab="guide">Инструкция</button>
+    <button class="tabbtn active" data-tab="promos">Акции</button>
+    <button class="tabbtn" data-tab="visuals">Визуалы</button>
+  </div>
+
+  <div id="view-guide" style="display:none"></div>
+
+  <div id="view-promos">
+  <div id="today"><div class="today hot"><div class="cap">Сегодня</div><h2>9 дел просрочено</h2>
+    <div class="hotrow late">
+        <div class="d">просрочено на 21 день</div>
+        <div class="n">Макет<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|macet">Готово</button>
+      </div><div class="hotrow late">
+        <div class="d">просрочено на 19 дней</div>
+        <div class="n">Позиционирование<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|pos">Готово</button>
+      </div><div class="hotrow late">
+        <div class="d">просрочено на 17 дней</div>
+        <div class="n">Согласование<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|appr">Готово</button>
+      </div><div class="hotrow late">
+        <div class="d">просрочено на 14 дней</div>
+        <div class="n">Сайт<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|site">Готово</button>
+      </div><div class="hotrow late">
+        <div class="d">просрочено на 14 дней</div>
+        <div class="n">Карты<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|maps">Готово</button>
+      </div><div class="hotrow late">
+        <div class="d">просрочено на 14 дней</div>
+        <div class="n">Соцсети<em>отпорпнопопра</em></div>
+        <button data-quick="p1788795346363|social">Готово</button>
+      </div>
+    </div></div>
+
+  <button class="addbtn" id="btn-add">+ Добавить акцию</button>
+
+  <div class="plist" id="plist"><button class="pcard" data-open="p1788795346363">
+    <div class="pbar"><i style="width:0%"></i></div>
+    <div class="phead">
+      <span class="ptype">Открытые КД</span>
+      <div class="grow" style="flex:1;text-align:left">
+        <div class="pname">отпорпнопопра</div>
+        <div class="pmeta">старт <b>8 сент.</b></div>
+      </div>
+      <div class="pdone late">0/7</div>
+    </div>
+  </button><button class="pcard" data-open="p1788793075224">
+    <div class="pbar"><i style="width:0%"></i></div>
+    <div class="phead">
+      <span class="ptype">Акция</span>
+      <div class="grow" style="flex:1;text-align:left">
+        <div class="pname">орпопропоп</div>
+        <div class="pmeta">старт <b>11 сент.</b></div>
+      </div>
+      <div class="pdone late">0/7</div>
+    </div>
+  </button></div>
+  <div id="archive"></div>
+  </div>
+
+  <div id="view-visuals" style="display:none"></div>
+</div>
+
+
+<script>
+const CHANNELS = [
+  {id:'macet', n:'Ключевой макет', who:'Полина', wave:'Подготовка', off:-7},
+  {id:'pos',   n:'Позиционирование', who:'Настя СПб', wave:'Подготовка', off:-7},
+  {id:'appr1', n:'Согласование концепции', who:'Анастасия — макет и тексты', wave:'Подготовка', dependsOn:'macet', relOff:1},
+  {id:'resize',n:'Ресайзы', who:'Вика — после утверждения', wave:'Подготовка', dependsOn:'appr1', relOff:1},
+  {id:'appr2', n:'Финальная приёмка', who:'Анастасия — комплект целиком', wave:'Подготовка', dependsOn:'resize', relOff:1},
+
+  {id:'site',  n:'Сайт', who:'Настя СПб', wave:'Публикация', off:0},
+  {id:'maps',  n:'Карты · Пойнтер', who:'Росина / Настя МСК', wave:'Публикация', off:0},
+  {id:'promo', n:'Промоблок YClients', who:'Настя СПб', wave:'Публикация', off:0},
+  {id:'cs',    n:'Шаблоны записи и рассылки', who:'Клиентский сервис', wave:'Публикация', off:0},
+
+  {id:'sm_post',   n:'Пост-анонс в Instagram', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_stories',n:'Серия сторис в Instagram', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_pin',    n:'Закреп в хайлайтах «Акции»', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_tg',     n:'Пост в Telegram', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_tg_st',  n:'Сторис в ТГ студий', who:'Аксинья — макет, размещают админы', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_vk',     n:'ВК-рассылка', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+  {id:'sm_digest', n:'Включение в дайджест', who:'Аксинья', wave:'Соцсети — Аксинья', off:0},
+
+  {id:'loyal', n:'Лояльность в YClients', who:'Настя СПб — до расчёта на кассе', wave:'К старту', dependsOn:'start', relOff:-1},
+  {id:'remind',n:'Напоминание перед стартом', who:'Аксинья — сторис', wave:'К старту', dependsOn:'start', relOff:-2},
+
+  {id:'cleanup', n:'Снять неактуальное', who:'Настя СПб — сайт, карты, промоблок', wave:'Постфактум', dependsOn:'end', relOff:1},
+  {id:'analytics', n:'Собрать аналитику', who:'Настя СПб — новые клиенты по акции', wave:'Постфактум', dependsOn:'end', relOff:3},
+];
+const EXTRA = [
+  {id:'target', n:'Таргет', who:'Контекстолог', wave:'Доп. каналы', off:-2},
+  {id:'monitor', n:'Монитор в студии', who:'Настя СПб', wave:'Доп. каналы', off:0},
+  {id:'print', n:'Полиграфия в студии', who:'Настя СПб', wave:'Доп. каналы', off:0},
+];
+const CLOSED_OFF = ['site','maps','sm_post','sm_stories','sm_pin','sm_tg','sm_tg_st','sm_vk','sm_digest'];
+const MONTHLY_OFF = ['sm_post'];
+const TYPES = ['Акция','Открытые КД','Закрытые КД','Комплекс'];
+const DAY = 86400000;
+
+let promos = [];
+let solos = [];
+let canWrite = true;
+
+function today(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function pd(s){ if(!s) return null; const d=new Date(s+'T00:00:00'); return isNaN(d)?null:d; }
+function iso(d){ return d.toISOString().slice(0,10); }
+function addDays(d,n){ return new Date(d.getTime()+n*DAY); }
+function daysBetween(a,b){ return Math.round((a-b)/DAY); }
+function fmt(d){ if(!d) return '—'; return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}); }
+function pl(n,a,b,c){ n=Math.abs(n)%100; const n1=n%10; if(n>10&&n<20)return c; if(n1>1&&n1<5)return b; if(n1===1)return a; return c; }
+function esc(s){ return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+
+function chanList(p){
+  const list = CHANNELS.filter(c => {
+    if(p.type==='Закрытые КД' && CLOSED_OFF.includes(c.id)) return false;
+    if(p.type==='Акция' && MONTHLY_OFF.includes(c.id)) return false;
+    return true;
+  });
+  const extra = (p.extra||[]).map(id => EXTRA.find(x=>x.id===id)).filter(Boolean);
+  const custom = (p.custom||[]).map(x => ({...x, wave:'Доп. каналы'}));
+  return list.concat(extra).concat(custom);
+}
+function deadlineFor(p,c){
+  if(p.dates && p.dates[c.id]) return pd(p.dates[c.id]);
+  if(c.dependsOn==='end'){
+    const e = pd(p.end) || pd(p.start); if(!e) return null;
+    return addDays(e, c.relOff||0);
+  }
+  if(c.dependsOn==='start'){
+    const st = pd(p.start); if(!st) return null;
+    return addDays(st, c.relOff||0);
+  }
+  if(c.dependsOn){
+    const base = CHANNELS.find(x=>x.id===c.dependsOn);
+    const baseD = base ? deadlineFor(p, base) : null;
+    return baseD ? addDays(baseD, c.relOff||0) : null;
+  }
+  const pub = pd(p.publish); if(!pub) return null;
+  return addDays(pub, c.off||0);
+}
+function stateOf(p,c){ return (p.st && p.st[c.id]) || ''; }
+function isLate(p,c){ const st=stateOf(p,c); if(st==='done'||st==='skip') return false; const d=deadlineFor(p,c); return d && d < today(); }
+function isSoon(p,c){ const st=stateOf(p,c); if(st==='done'||st==='skip') return false; const d=deadlineFor(p,c); if(!d) return false; const diff=daysBetween(d,today()); return diff>=0 && diff<=2; }
+
+function progress(p){
+  const list = chanList(p).filter(c => stateOf(p,c)!=='skip');
+  const done = list.filter(c => stateOf(p,c)==='done').length;
+  return {done, total:list.length};
+}
+function isArchived(p){
+  const {done,total} = progress(p);
+  const start = pd(p.start);
+  return total>0 && done===total && start && start < today();
+}
+
+/* ---------------- render ---------------- */
+const VISUAL_IDS = ['macet','resize'];
+const PRIO = {fire:{n:'🔥 Горит',o:0}, queue:{n:'📋 В очереди',o:1}, later:{n:'🕐 Подождёт',o:2}};
+
+function prioOf(p,cid){
+  if(p.prio && p.prio[cid]) return p.prio[cid];
+  const c = CHANNELS.find(x=>x.id===cid);
+  if(!c) return 'queue';
+  const d = deadlineFor(p,c);
+  if(!d) return 'later';
+  const diff = daysBetween(d, today());
+  return diff <= 2 ? 'fire' : diff <= 7 ? 'queue' : 'later';
+}
+
+function renderVisuals(){
+  const box = document.getElementById('view-visuals');
+  const rows = [];
+  promos.forEach(p => {
+    if(isArchived(p)) return;
+    VISUAL_IDS.forEach(cid => {
+      const c = chanList(p).find(x=>x.id===cid);
+      if(!c) return;
+      const st = stateOf(p,c);
+      if(st==='skip') return;
+      rows.push({p, c, st, d:deadlineFor(p,c), prio:prioOf(p,cid), late:isLate(p,c), solo:false});
+    });
+  });
+  solos.forEach(s => {
+    if(s.st==='done' && s.deadline && pd(s.deadline) < addDays(today(),-7)) return;
+    const d = pd(s.deadline);
+    const late = s.st!=='done' && d && d < today();
+    rows.push({s, st:s.st||'', d, prio:s.prio||'queue', late, solo:true});
+  });
+
+  const addBar = canWrite
+    ? `<button class="addbtn" id="btn-add-visual" style="margin-top:12px">+ Добавить макет вне акции</button>`
+    : '';
+
+  if(!rows.length){
+    box.innerHTML = addBar + `<div class="empty">Нет активных задач на визуалы</div>`;
+    return;
+  }
+
+  const fireCount = rows.filter(r=>r.prio==='fire' && r.st!=='done').length;
+  const warn = fireCount > 3
+    ? `<div class="vgroup"><div class="today hot" style="margin:12px 0"><div class="cap">Нагрузка</div><h2>${fireCount} горящих макета</h2><div class="calm">Это больше, чем помещается в неделю — время поднять красный флаг и пересогласовать сроки.</div></div></div>`
+    : '';
+
+  const order = ['fire','queue','later'];
+  box.innerHTML = addBar + warn + order.map(pr => {
+    const grp = rows.filter(r=>r.prio===pr).sort((a,b)=>(a.d||0)-(b.d||0));
+    if(!grp.length) return '';
+    return `<div class="vgroup"><div class="vt">${PRIO[pr].n} · ${grp.length}</div>
+      ${grp.map(vcardHtml).join('')}</div>`;
+  }).join('');
+}
+
+function vcardHtml(r){
+  const {st,d,late,solo} = r;
+  const left = d ? daysBetween(d, today()) : null;
+  const dueLabel = left===null ? 'без срока'
+    : left<0 ? `просрочено на ${-left} ${pl(-left,'день','дня','дней')}`
+    : left===0 ? 'сегодня' : `через ${left} ${pl(left,'день','дня','дней')}`;
+
+  const title = solo ? r.s.name : r.p.name;
+  const who = solo ? (r.s.who || 'Полина') : r.c.who;
+  const kind = solo ? (r.s.source || 'Вне акции') : r.c.n;
+  const key = solo ? `solo|${r.s.id}` : `${r.p.id}|${r.c.id}`;
+
+  return `<div class="vcard ${late?'late':''} ${st==='done'?'done':''}">
+    <div class="vtop">
+      <div class="vn"><b>${esc(title)}</b><em>${esc(who)}</em></div>
+      <span class="vkind">${esc(kind)}</span>
+    </div>
+    <div class="vctrl">
+      <select data-vprio="${key}" ${canWrite?'':'disabled'}>
+        ${Object.keys(PRIO).map(k=>`<option value="${k}" ${r.prio===k?'selected':''}>${PRIO[k].n}</option>`).join('')}
+      </select>
+      <select data-vst="${key}" ${canWrite?'':'disabled'}>
+        <option value="" ${st===''?'selected':''}>Не начато</option>
+        <option value="work" ${st==='work'?'selected':''}>В работе</option>
+        <option value="done" ${st==='done'?'selected':''}>Готово</option>
+      </select>
+      ${canWrite ? `<input type="date" data-vdate="${key}" value="${d?iso(d):''}" style="width:110px">` : ''}
+      <span class="vdue ${late?'late':''}">${dueLabel}</span>
+      ${canWrite && solo ? `<button data-vdel="${r.s.id}" style="margin-left:auto;font-size:11px;color:#B9B4AA;padding:4px 7px;border:1px solid var(--line);border-radius:8px">✕</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function openVisualForm(){
+  const body = `
+    <div class="field"><label>Что нужно сделать</label><input id="v-n" placeholder="Например: тейбл-тент по абонементам"></div>
+    <div class="field"><label>Источник задачи</label><select id="v-src">
+      <option>Полиграфия</option><option>Вне акции</option><option>SMM</option>
+      <option>Собственница</option><option>Партнёрства</option><option>Прочее</option>
+    </select></div>
+    <div class="two">
+      <div class="field"><label>Исполнитель</label><select id="v-who"><option>Полина</option><option>Вика</option></select></div>
+      <div class="field"><label>Срок</label><input id="v-d" type="date"></div>
+    </div>
+    <div class="field"><label>Приоритет</label><select id="v-p">
+      ${Object.keys(PRIO).map(k=>`<option value="${k}" ${k==='queue'?'selected':''}>${PRIO[k].n}</option>`).join('')}
+    </select></div>
+    <button class="cta" id="v-go">Добавить макет</button>
+  `;
+  const m = openSheet('Макет вне акции', body, '');
+  m.querySelector('#v-go').addEventListener('click', async () => {
+    const name = m.querySelector('#v-n').value.trim();
+    if(!name){ m.querySelector('#v-n').focus(); return; }
+    solos.push({
+      id:'s'+Date.now(), name,
+      source: m.querySelector('#v-src').value,
+      who: m.querySelector('#v-who').value,
+      deadline: m.querySelector('#v-d').value,
+      prio: m.querySelector('#v-p').value,
+      st: ''
+    });
+    await persist(); closeSheet();
+  });
+}
+
+function render(){
+  renderToday();
+  renderList();
+  renderVisuals();
+  document.getElementById('btn-add').style.display = canWrite ? 'block' : 'none';
+}
+
+function renderToday(){
+  const box = document.getElementById('today');
+  const items = [];
+  promos.forEach(p => chanList(p).forEach(c => {
+    if(isLate(p,c) || isSoon(p,c)) items.push({p,c,d:deadlineFor(p,c)});
+  }));
+  items.sort((a,b)=>a.d-b.d);
+  const lateCount = items.filter(i=>i.d<today()).length;
+
+  if(!items.length){
+    box.innerHTML = `<div class="today"><div class="cap">Сегодня</div><h2>Всё в срок</h2><div class="calm">Ничего не горит — ближайшие дела появятся здесь за 2 дня до срока.</div></div>`;
+    return;
+  }
+  const head = lateCount ? `${lateCount} ${pl(lateCount,'дело просрочено','дела просрочено','дел просрочено')}`
+                         : `${items.length} ${pl(items.length,'дело на подходе','дела на подходе','дел на подходе')}`;
+  box.innerHTML = `<div class="today hot"><div class="cap">Сегодня</div><h2>${head}</h2>
+    ${items.slice(0,6).map(i=>{
+      const left = daysBetween(i.d, today());
+      const label = left<0 ? `просрочено на ${-left} ${pl(-left,'день','дня','дней')}` : left===0 ? 'сегодня' : `через ${left} ${pl(left,'день','дня','дней')}`;
+      return `<div class="hotrow ${left<0?'late':''}">
+        <div class="d">${label}</div>
+        <div class="n">${esc(i.c.n)}<em>${esc(i.p.name)}</em></div>
+        <button data-quick="${i.p.id}|${i.c.id}">Готово</button>
+      </div>`;
+    }).join('')}
+    </div>`;
+}
+
+function renderList(){
+  const active = promos.filter(p=>!isArchived(p)).sort((a,b)=>(pd(a.start)||0)-(pd(b.start)||0));
+  const archived = promos.filter(isArchived);
+
+  const list = document.getElementById('plist');
+  if(!active.length && !archived.length){
+    list.innerHTML = `<div class="empty">Пока нет ни одной акции — добавь первую кнопкой выше</div>`;
+  } else if(!active.length){
+    list.innerHTML = '';
+  } else {
+    list.innerHTML = active.map(cardHtml).join('');
+  }
+
+  const arch = document.getElementById('archive');
+  if(!archived.length){ arch.innerHTML=''; return; }
+  arch.innerHTML = `<button class="archive-toggle" id="arch-toggle">Завершённые (${archived.length}) ▾</button>
+    <div class="plist" id="arch-list" style="display:none">${archived.map(cardHtml).join('')}</div>`;
+}
+
+function cardHtml(p){
+  const {done,total} = progress(p);
+  const pct = total? Math.round(done/total*100):0;
+  const start = pd(p.start);
+  const anyLate = chanList(p).some(c=>isLate(p,c));
+  return `<button class="pcard" data-open="${p.id}">
+    <div class="pbar"><i style="width:${pct}%"></i></div>
+    <div class="phead">
+      <span class="ptype">${esc(p.type)}</span>
+      <div class="grow" style="flex:1;text-align:left">
+        <div class="pname">${esc(p.name)}</div>
+        <div class="pmeta">старт <b>${fmt(start)}</b></div>
+      </div>
+      <div class="pdone ${anyLate?'late':''}">${done}/${total}</div>
+    </div>
+  </button>`;
+}
+
+/* ---------------- sheet: detail ---------------- */
+function openDetail(id){
+  const p = promos.find(x=>x.id===id); if(!p) return;
+  const waves = ['Подготовка','Публикация','Соцсети — Аксинья','К старту','Доп. каналы','Постфактум'];
+  const body = () => waves.map(w=>{
+    const chans = chanList(p).filter(c=>c.wave===w);
+    if(!chans.length) return '';
+    return `<div class="wave"><div class="wt">${w}</div>${chans.map(c=>rowHtml(p,c)).join('')}</div>`;
+  }).join('') + freeExtraHtml(p);
+
+  const m = openSheet(p.name, body, `
+    <button class="cta quiet" data-edit="${p.id}">Изменить акцию</button>
+  `);
+
+  function refresh(){ m.querySelector('.body-inner').innerHTML = body(); }
+
+  m.addEventListener('click', async e => {
+    const t = e.target.closest('[data-tick]');
+    if(t){ p.st = p.st||{}; const cur = p.st[t.dataset.tick]||''; p.st[t.dataset.tick] = cur===''?'work':cur==='work'?'done':''; await persist(); refresh(); return; }
+    const sk = e.target.closest('[data-skip]');
+    if(sk){ p.st = p.st||{}; p.st[sk.dataset.skip] = p.st[sk.dataset.skip]==='skip'?'':'skip'; await persist(); refresh(); return; }
+    const add = e.target.closest('[data-addextra]');
+    if(add){ p.extra = (p.extra||[]).concat(add.dataset.addextra); await persist(); refresh(); return; }
+    const addc = e.target.closest('[data-addcustom]');
+    if(addc){
+      const nameEl = m.querySelector('#custom-ch-name'), whoEl = m.querySelector('#custom-ch-who');
+      const name = nameEl.value.trim(); if(!name) { nameEl.focus(); return; }
+      const who = whoEl.value.trim() || 'Настя СПб';
+      p.custom = (p.custom||[]).concat({id:'c'+Date.now(), n:name, who, off:0});
+      await persist(); refresh(); return;
+    }
+    const ed = e.target.closest('[data-edit]');
+    if(ed){ closeSheet(); openForm(p.id); return; }
+  });
+  m.addEventListener('change', async e => {
+    const d = e.target.closest('[data-date]');
+    if(d){ p.dates = p.dates||{}; if(d.value) p.dates[d.dataset.date]=d.value; else delete p.dates[d.dataset.date]; await persist(); refresh(); }
+  });
+}
+
+function rowHtml(p,c){
+  const st = stateOf(p,c);
+  const late = isLate(p,c);
+  const d = deadlineFor(p,c);
+  const cls = ['chip-row', st, late&&st!==''&&st!=='skip'?'late':''].filter(Boolean).join(' ');
+  return `<div class="${cls}">
+    <div class="dot" data-tick="${c.id}" style="cursor:pointer"></div>
+    <div class="grow" data-tick="${c.id}" style="cursor:pointer">
+      <div class="cn">${esc(c.n)}</div><div class="cw">${esc(c.who)}</div>
+    </div>
+    ${canWrite
+      ? `<input type="date" data-date="${c.id}" value="${d?iso(d):''}" style="border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:11px;width:100px">`
+      : `<div class="cd">${d?fmt(d):'—'}</div>`}
+    ${canWrite ? `<button class="skipbtn" data-skip="${c.id}">${st==='skip'?'вернуть':'не нужно'}</button>` : ''}
+  </div>`;
+}
+
+function freeExtraHtml(p){
+  const free = EXTRA.filter(x => !(p.extra||[]).includes(x.id));
+  if(!canWrite) return '';
+  return `<div class="wave"><div class="wt">Подключить ещё канал</div>
+    ${free.map(x=>`<button class="chip-row" style="width:100%;text-align:left" data-addextra="${x.id}">
+      <div class="dot"></div><div class="grow"><div class="cn">+ ${esc(x.n)}</div><div class="cw">${esc(x.who)}</div></div>
+    </button>`).join('')}
+    <div class="chip-row" style="align-items:flex-start">
+      <div class="grow" style="display:flex;gap:6px;flex-wrap:wrap">
+        <input id="custom-ch-name" type="text" placeholder="Другой носитель — название" style="flex:2;min-width:120px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px">
+        <input id="custom-ch-who" type="text" placeholder="Кто делает" style="flex:1;min-width:90px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px">
+        <button data-addcustom style="flex:none;background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px">+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- sheet: add/edit ---------------- */
+function openForm(editId){
+  const p = editId ? promos.find(x=>x.id===editId) : null;
+  const defaultPublish = (type, start) => {
+    if(!start) return '';
+    const s = pd(start);
+    const offset = (type==='Открытые КД'||type==='Закрытые КД') ? -14 : -3;
+    return iso(addDays(s, offset));
+  };
+  const body = () => `
+    <div class="field"><label>Название</label><input id="i-n" placeholder="«Двойной уход»: массаж лица + уход" value="${p?esc(p.name):''}"></div>
+    <div class="field"><label>Тип</label><select id="i-t">${TYPES.map(t=>`<option ${p&&p.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="two">
+      <div class="field"><label>Старт</label><input id="i-s" type="date" value="${p?p.start||'':''}"></div>
+      <div class="field"><label>Финиш</label><input id="i-e" type="date" value="${p?p.end||'':''}"></div>
+    </div>
+    <div class="field"><label>Дата публикации (когда всё должно быть готово и выйти)</label><input id="i-p" type="date" value="${p?p.publish||'':''}"></div>
+    <div id="i-hint" class="hintbox" style="display:none"></div>
+    <button class="cta" id="i-go">${p?'Сохранить':'Добавить акцию'}</button>
+    ${p?`<button class="cta quiet" id="i-del">Удалить акцию</button>`:''}
+  `;
+  const m = openSheet(p?'Изменить акцию':'Новая акция', body, '');
+
+  const upd = () => {
+    const t = m.querySelector('#i-t').value, s = m.querySelector('#i-s').value, pub = m.querySelector('#i-p').value;
+    const h = m.querySelector('#i-hint');
+    if(!pub && s){
+      const sug = defaultPublish(t,s);
+      h.style.display='block';
+      h.innerHTML = `Для «${t}» обычно публикация выходит ${t.includes('КД')?'за 2 недели':'за несколько дней'} до старта. Предложенная дата: <b>${fmt(pd(sug))}</b> — можно поставить вручную выше.`;
+    } else h.style.display='none';
+  };
+  m.querySelector('#i-t').addEventListener('change', upd);
+  m.querySelector('#i-s').addEventListener('change', ()=>{
+    if(!m.querySelector('#i-p').value){ const sug=defaultPublish(m.querySelector('#i-t').value, m.querySelector('#i-s').value); if(sug) m.querySelector('#i-p').value=sug; }
+    upd();
+  });
+  upd();
+
+  m.querySelector('#i-go').addEventListener('click', async () => {
+    const name = m.querySelector('#i-n').value.trim();
+    if(!name){ m.querySelector('#i-n').focus(); return; }
+    const type = m.querySelector('#i-t').value, start = m.querySelector('#i-s').value, end = m.querySelector('#i-e').value, publish = m.querySelector('#i-p').value;
+    if(p){ Object.assign(p, {name,type,start,end,publish}); }
+    else { promos.push({id:'p'+Date.now(), name, type, start, end, publish, st:{}, dates:{}, extra:[]}); }
+    await persist(); closeSheet();
+  });
+  const del = m.querySelector('#i-del');
+  del && del.addEventListener('click', async () => {
+    if(confirm(`Удалить «${p.name}»? Все отметки пропадут.`)){
+      promos = promos.filter(x=>x.id!==p.id); await persist(); closeSheet();
+    }
+  });
+}
+
+/* ---------------- generic sheet helper ---------------- */
+let currentMask = null;
+function openSheet(title, bodyFn, footer){
+  closeSheet();
+  const mask = document.createElement('div'); mask.className='mask';
+  mask.innerHTML = `<div class="sheet"><div class="grab"></div>
+    <div class="shead"><h3>${esc(title)}</h3><button class="x" data-close>Закрыть</button></div>
+    <div class="body"><div class="body-inner">${typeof bodyFn==='function'?bodyFn():bodyFn}</div>${footer||''}</div>
+  </div>`;
+  mask.addEventListener('click', e => { if(e.target===mask || e.target.closest('[data-close]')) closeSheet(); });
+  document.body.appendChild(mask);
+  currentMask = mask;
+  return mask;
+}
+function closeSheet(){ if(currentMask){ currentMask.remove(); currentMask=null; } }
+
+/* ---------------- persistence: Google Sheets ---------------- */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxCiK59tnm6uRQAur9XObaE_AyPoqb14N1vvCDFW9Z7cEIKk59wDbBJgoDpeBK7wpM/exec';
+
+let token = '';
+let saveTimer = null;
+let saving = false;
+let pendingSave = false;
+
+function setSyncState(txt, bad){
+  const b = document.getElementById('status-badge');
+  b.textContent = txt;
+  b.className = 'status' + (bad ? ' ro' : '');
+}
+
+async function apiLoad(){
+  const url = API_URL + '?token=' + encodeURIComponent(token) + '&t=' + Date.now();
+  const r = await fetch(url);
+  const j = await r.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+
+async function apiSave(){
+  const r = await fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({token, promos, solos})
+  });
+  const j = await r.json();
+  if(j.error) throw new Error(j.error);
+}
+
+async function flushSave(){
+  if(saving){ pendingSave = true; return; }
+  saving = true;
+  setSyncState('… сохраняю');
+  try{
+    await apiSave();
+    setSyncState('✓ сохранено');
+  }catch(e){
+    setSyncState('⚠ не сохранилось', true);
+  }
+  saving = false;
+  if(pendingSave){ pendingSave = false; flushSave(); }
+}
+
+async function persist(){
+  render();
+  if(!canWrite) return;
+  clearTimeout(saveTimer);
+  setSyncState('… изменено');
+  saveTimer = setTimeout(flushSave, 700);
+}
+
+function askToken(){
+  const saved = (()=>{ try{ return localStorage.getItem('fr_token')||''; }catch(e){ return ''; } })();
+  const v = prompt('Ключ доступа к трекеру:', saved);
+  if(v===null) return saved;
+  try{ localStorage.setItem('fr_token', v.trim()); }catch(e){}
+  return v.trim();
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', async e => {
+  const sb = e.target.closest('#status-badge');
+  if(sb){ const v = askToken(); if(v){ token = v; init(); } return; }
+  const tb = e.target.closest('[data-tab]');
+  if(tb){
+    document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active', b===tb));
+    const t = tb.dataset.tab;
+    if(t==='guide') renderGuide();
+    document.getElementById('view-guide').style.display = t==='guide'?'block':'none';
+    document.getElementById('view-promos').style.display = t==='promos'?'block':'none';
+    document.getElementById('view-visuals').style.display = t==='visuals'?'block':'none';
+    document.getElementById('today').style.display = t==='promos'?'block':'none';
+    window.scrollTo(0,0);
+    return;
+  }
+  const gt = e.target.closest('[data-gtoggle]');
+  if(gt){ gt.closest('.gsec').classList.toggle('open'); return; }
+  const q = e.target.closest('[data-quick]');
+  if(q){ const [pid,cid]=q.dataset.quick.split('|'); const p=promos.find(x=>x.id===pid); if(p){ p.st=p.st||{}; p.st[cid]='done'; await persist(); } return; }
+  const open = e.target.closest('[data-open]');
+  if(open){ openDetail(open.dataset.open); return; }
+  const at = e.target.closest('#arch-toggle');
+  if(at){ const l=document.getElementById('arch-list'); l.style.display = l.style.display==='none'?'block':'none'; return; }
+  const av = e.target.closest('#btn-add-visual');
+  if(av){ openVisualForm(); return; }
+  const vdel = e.target.closest('[data-vdel]');
+  if(vdel){
+    const s = solos.find(x=>x.id===vdel.dataset.vdel);
+    if(s && confirm(`Удалить «${s.name}»?`)){ solos = solos.filter(x=>x.id!==s.id); await persist(); }
+    return;
+  }
+});
+
+document.addEventListener('change', async e => {
+  const pr = e.target.closest('[data-vprio]');
+  if(pr){ const [a,b]=pr.dataset.vprio.split('|');
+    if(a==='solo'){ const s=solos.find(x=>x.id===b); if(s){ s.prio=pr.value; await persist(); } }
+    else { const p=promos.find(x=>x.id===a); if(p){ p.prio=p.prio||{}; p.prio[b]=pr.value; await persist(); } }
+    return; }
+  const vs = e.target.closest('[data-vst]');
+  if(vs){ const [a,b]=vs.dataset.vst.split('|');
+    if(a==='solo'){ const s=solos.find(x=>x.id===b); if(s){ s.st=vs.value; await persist(); } }
+    else { const p=promos.find(x=>x.id===a); if(p){ p.st=p.st||{}; p.st[b]=vs.value; await persist(); } }
+    return; }
+  const vd = e.target.closest('[data-vdate]');
+  if(vd){ const [a,b]=vd.dataset.vdate.split('|');
+    if(a==='solo'){ const s=solos.find(x=>x.id===b); if(s){ s.deadline=vd.value; await persist(); } }
+    else { const p=promos.find(x=>x.id===a); if(p){ p.dates=p.dates||{}; if(vd.value) p.dates[b]=vd.value; else delete p.dates[b]; await persist(); } }
+    return; }
+});
+
+document.getElementById('btn-add').addEventListener('click', () => openForm());
+
+/* ---------------- init ---------------- */
+/* ---------------- guide ---------------- */
+const GUIDE = [
+  {i:'🏠', t:'Кто ты и что от тебя ждут', h:`
+    <p>Ты — менеджер по маркетингу. Отвечаешь за то, чтобы акции и клиентские дни запускались вовремя и качественно, за полиграфию и оформление студий, за загрузку дизайнера и за администрирование сайта.</p>
+    <h4>Твой KPI</h4>
+    <p><b>Новые клиенты по акциям месяца.</b> Фиксируется в YClients (акции месяца) и видно в аналитике отдельной графой. Кроме итогового числа важен процесс: вышли ли все анонсы вовремя и во всех каналах — это ранний сигнал, что результат будет хорошим.</p>
+    <h4>Чего от тебя ждут</h4>
+    <ul>
+      <li>Ответственность и чёткость в сроках</li>
+      <li>Инициативность и креативность — новые механики акций и новые каналы информирования</li>
+      <li>Ответственность не только за свою часть процесса, но и за смежные: напоминать Анастасии о согласовании, выбивать информацию у управляющих</li>
+    </ul>`},
+
+  {i:'🎯', t:'Акции и клиентские дни', h:`
+    <span class="gbadge">Процесс согласования</span>
+    <div class="gstep"><div class="gn">1</div><div class="gt"><b>До 10 числа</b><span>Управляющие и маркетинг вносят акции в таблицу на согласование. Вносить может кто угодно — ты в том числе.</span></div></div>
+    <div class="gstep"><div class="gn">2</div><div class="gt"><b>До 15 числа</b><span>Алина знакомится с таблицей, дальше собрание: запускаем / дорабатываем / досчитываем.</span></div></div>
+    <div class="gstep"><div class="gn">3</div><div class="gt"><b>После «ок»</b><span>Забираешь акцию в работу — дальше твоя зона.</span></div></div>
+    <div class="gnote warn"><b>20 число — красная линия.</b> Подготовка занимает неделю. Согласование 20-го → анонс выходит 27–29-го, всё успевает. Согласование 25-го → макеты готовы 1-го, и акция стартует без анонса. Если граница пройдена — фиксируй письменно и сообщай Анастасии в тот же день, не дожидаясь конца месяца.</div>
+
+    <h4>Сроки анонса по типам</h4>
+    <table>
+      <tr><th>Тип</th><th>Анонс до старта</th></tr>
+      <tr><td>Клиентский день</td><td><b>14 дней</b> (минимум 10)</td></tr>
+      <tr><td>Короткая акция (выходные)</td><td><b>7 дней</b></td></tr>
+      <tr><td>Акция месяца</td><td><b>3–5 дней</b></td></tr>
+    </table>
+    <p>Логика простая: чем уже окно, в которое клиент может воспользоваться акцией, тем раньше нужен анонс. На клиентский день нужно спланировать конкретный день — поэтому длинный анонс критичен. Месячной акцией можно воспользоваться когда угодно.</p>
+
+    <h4>Что делаешь с момента «ок»</h4>
+    <div class="gstep"><div class="gn">1</div><div class="gt"><b>Задача на описание акции</b><span>Чек-лист: что должно произойти для запуска.</span></div></div>
+    <div class="gstep"><div class="gn">2</div><div class="gt"><b>Задача на ключевой макет</b><span>Полина — 3 рабочих дня.</span></div></div>
+    <div class="gstep"><div class="gn">3</div><div class="gt"><b>Позиционирование</b><span>Короткие тексты для сайта, карт, промоблока YClients.</span></div></div>
+    <div class="gstep"><div class="gn">4</div><div class="gt"><b>Согласование концепции</b><span>Анастасия смотрит макет и тексты — до ресайзов, чтобы правки не стоили всей недели.</span></div></div>
+    <div class="gstep"><div class="gn">5</div><div class="gt"><b>Ресайзы</b><span>Вика режет уже утверждённое.</span></div></div>
+    <div class="gstep"><div class="gn">6</div><div class="gt"><b>Публикация</b><span>Сайт и промоблок — ты. Карты — Росина. Соцсети — Аксинья. Шаблоны записи и рассылки — клиентский сервис.</span></div></div>
+    <div class="gstep"><div class="gn">7</div><div class="gt"><b>Лояльность в YClients</b><span>Накануне старта — без неё администратор не применит скидку на кассе.</span></div></div>
+    <div class="gstep"><div class="gn">8</div><div class="gt"><b>Постфактум</b><span>Снять неактуальное с сайта, карт и промоблока. Собрать аналитику по акции.</span></div></div>
+
+    <h4>Минимум в соцсетях</h4>
+    <p>Это норматив, а не пожелание. Если что-то не вышло — это отклонение, обсуждается на планёрке.</p>
+    <table>
+      <tr><th>Акция месяца</th><th>Клиентский день</th></tr>
+      <tr><td>Серия сторис при старте<br>Закреп в хайлайтах<br>Пост в Telegram<br>Сторис в ТГ студий<br>ВК-рассылка<br>Дайджест<br>Напоминания раз в неделю</td><td>Пост-анонс в ленте<br>Серия сторис<br>Закреп в хайлайтах<br>Пост в Telegram<br>Сторис в ТГ студий<br>ВК-рассылка<br>Напоминание за 2–3 дня<br>Сторис в день КД</td></tr>
+    </table>
+
+    <div class="gnote"><b>Чат с администраторами.</b> Вопросы по лояльностям и акциям — твоя зона. Отвечать оперативно и при необходимости править лояльность в живом режиме. Недопустимо: клиент пришёл, лояльность не применяется, админ написал — никто не ответил.</div>`},
+
+  {i:'🖨️', t:'Полиграфия и студии', h:`
+    <h4>Что где размещается</h4>
+    <ul>
+      <li><b>Ресепшен:</b> прайс, абонементы на лицо, подарочные сертификаты и депозиты, сезонные тейбл-тенты, контент на мониторах</li>
+      <li><b>Кабинет массажа тела:</b> абонемент на 3 практики для тела</li>
+      <li><b>Зона ожидания:</b> тоже доступна для размещения</li>
+    </ul>
+    <h4>Зона ответственности</h4>
+    <ul>
+      <li>Макеты и печать, контроль подрядчиков</li>
+      <li>Размещение в студиях, слежение за остатками</li>
+      <li>Снабжение: сертификаты, бумага для ценников, визитки — раз в месяц по таблице заявок</li>
+    </ul>
+    <div class="gnote"><b>Принцип качества.</b> Полиграфия должна быть красивой, актуальной и не избитой. Главная ловушка — когда студия превращается в очередь одинаковых тейбл-тентов, перечисляющих разные акции подряд.</div>
+    <span class="gbadge">Раз в 2 недели</span>
+    <h4>Выезд в студию</h4>
+    <p>По ротации, чтобы за несколько циклов охватить все студии СПб. Проверяешь: актуальность (не висит ли отменённое), физическое состояние, остатки, общий вид зоны ресепшн.</p>`},
+
+  {i:'🎨', t:'Работа с Полиной', h:`
+    <span class="gbadge">Каждый понедельник</span>
+    <p>Собираешь с Полиной полный список задач на неделю, приоритизируешь вместе с ней, контролируешь сроки в течение недели. Всё это ведётся на вкладке «Визуалы» — там же видны макеты по всем акциям автоматически.</p>
+    <h4>Ты — «адвокат» Полины</h4>
+    <p>Если задач больше, чем помещается — разбираться должна не Полина. Твоя обязанность поднять красный флаг:</p>
+    <div class="gnote">«Мы не можем взять эти задачи сейчас — есть другие приоритеты. Либо сдвигаем сроки, либо выбираем, что важнее.»</div>
+    <p>На вкладке «Визуалы» это срабатывает автоматически: если горящих макетов больше трёх, появляется предупреждение.</p>`},
+
+  {i:'💻', t:'Сайт и SEO-вычитка', h:`
+    <h4>Что делаешь сама</h4>
+    <ul>
+      <li>Размещаешь новости и акции (свои и партнёров франшизы)</li>
+      <li>Меняешь стоимость услуги или её описание</li>
+      <li>Другой простой контент через админку</li>
+    </ul>
+    <p>Если технически что-то не получается или задача выходит за рамки простого редактирования — обращаешься к Руните.</p>
+    <h4>SEO-вычитка — перспективная задача</h4>
+    <p>Пока не входит в активную зону, добавится позже. Что важно будет ловить:</p>
+    <ul>
+      <li>У нас open space, зонирования нет — «уютные кабинеты» не пишем (кроме массажа тела)</li>
+      <li>Мы не оказываем медицинские услуги — слово «процедуры» не используем</li>
+      <li>В целом меньше медицинской лексики</li>
+    </ul>`},
+
+  {i:'📋', t:'Документы, которые ты ведёшь', h:`
+    <h4>«Положение об акциях» — вкладка «Акции месяца»</h4>
+    <table>
+      <tr><th>Поле</th><th>Что вносить</th></tr>
+      <tr><td>Название</td><td>Как акция называется</td></tr>
+      <tr><td>Срок</td><td>Даты действия</td></tr>
+      <tr><td>Город</td><td>СПб / Москва / оба</td></tr>
+      <tr><td>Наполнение</td><td>Что входит в акцию</td></tr>
+      <tr><td>Механика</td><td>Как технически работает, включая заведённую лояльность</td></tr>
+    </table>
+    <h4>Лояльности в YClients</h4>
+    <p>Лояльность = акция, заведённая технически, чтобы администратор мог применить скидку при оплате. Заводится накануне старта. Лояльности не удаляются после окончания акции.</p>`},
+
+  {i:'📊', t:'Отчётность', h:`
+    <div class="gnote"><b>Аналитика по акциям — твоя зона.</b> Цифры новых клиентов по каждой акции ты предоставляешь не только в отчётах, но и по запросу Анастасии в любой момент. Держи их под рукой.</div>
+    <span class="gbadge">Каждый вторник</span>
+    <h4>Планёрка — устно, без документа</h4>
+    <ul>
+      <li>Текущий план-факт по новым клиентам</li>
+      <li>Статус освещения акций — что вышло, что в работе</li>
+      <li>Приоритетные задачи на неделю</li>
+      <li>Загрузка Полины — есть ли риск перегруза</li>
+    </ul>
+    <span class="gbadge">Раз в 2 недели</span>
+    <h4>Промежуточный отчёт</h4>
+    <table>
+      <tr><th>Блок</th><th>Что вносишь</th></tr>
+      <tr><td>План-факт по KPI</td><td>План на месяц vs факт на текущий момент. Для месячных акций это тренд, не итог — так и помечай</td></tr>
+      <tr><td>Что сделано</td><td>Какие акции запущены, где вышли</td></tr>
+      <tr><td>Что не сделано</td><td>Что не вышло вовремя и почему — конкретная причина</td></tr>
+      <tr><td>Полиграфия</td><td>Что обновлено, был ли выезд, что обнаружено</td></tr>
+      <tr><td>Дизайнер</td><td>Как распределена нагрузка, поднимался ли флаг</td></tr>
+      <tr><td>Красные флаги</td><td>Что рискует не успеть</td></tr>
+      <tr><td>План на 2 недели</td><td>Конкретно, по пунктам</td></tr>
+    </table>
+    <span class="gbadge">Раз в месяц</span>
+    <h4>Итоговый отчёт — презентация</h4>
+    <table>
+      <tr><th>Блок</th><th>Что вносишь</th></tr>
+      <tr><td>План-факт по KPI</td><td>План vs факт, % выполнения — обязательная строка</td></tr>
+      <tr><td>Аналитика акций</td><td>Новые клиенты по каждой акции отдельно и суммарно</td></tr>
+      <tr><td>Почему отклонение</td><td>Конкретная причина по каждой акции</td></tr>
+      <tr><td>Решение</td><td>Масштабировать / отключить / переделать</td></tr>
+      <tr><td>Полиграфия и студии</td><td>Итоги выездов за месяц</td></tr>
+      <tr><td>План на следующий месяц</td><td>Акции, полиграфия, сайт</td></tr>
+    </table>`},
+];
+
+function renderGuide(){
+  const box = document.getElementById('view-guide');
+  if(box.dataset.built) return;
+  box.dataset.built = '1';
+  box.innerHTML = GUIDE.map((g,i)=>`
+    <div class="gsec" data-gsec="${i}">
+      <button class="ghead" data-gtoggle="${i}">
+        <span class="gi">${g.i}</span><span class="gc">${g.t}</span><span class="gx">▾</span>
+      </button>
+      <div class="gbody">${g.h}</div>
+    </div>`).join('');
+}
+
+async function init(){
+  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab==='promos'));
+  document.getElementById('view-guide').style.display='none';
+  document.getElementById('view-promos').style.display='block';
+  document.getElementById('view-visuals').style.display='none';
+
+  canWrite = false;
+  render();
+  setSyncState('… загружаю');
+
+  try{ token = localStorage.getItem('fr_token') || ''; }catch(e){ token=''; }
+  if(!token) token = askToken();
+
+  let ok = false;
+  for(let attempt=0; attempt<3 && !ok; attempt++){
+    try{
+      const data = await apiLoad();
+      promos = Array.isArray(data.promos) ? data.promos : [];
+      solos  = Array.isArray(data.solos)  ? data.solos  : [];
+      ok = true;
+    }catch(e){
+      if(String(e.message).includes('auth')){
+        alert('Ключ доступа не подошёл. Попробуйте ещё раз.');
+        token = askToken();
+        if(!token) break;
+      } else {
+        setSyncState('⚠ нет связи', true);
+        break;
+      }
+    }
+  }
+
+  if(ok){
+    canWrite = true;
+    render();
+    setSyncState('✓ загружено');
+  } else {
+    render();
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if(document.hidden || !canWrite || saving) return;
+  try{
+    const data = await apiLoad();
+    promos = Array.isArray(data.promos) ? data.promos : promos;
+    solos  = Array.isArray(data.solos)  ? data.solos  : solos;
+    render();
+  }catch(e){}
+});
+
+init();
+</script>
+
+
+</body></html>
